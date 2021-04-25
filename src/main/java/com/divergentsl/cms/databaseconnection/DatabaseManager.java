@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -14,6 +16,10 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class DatabaseManager implements IDatabaseManager {
+	
+	@Autowired
+	Environment en;
+	
 
 	static {
 		try {
@@ -26,7 +32,7 @@ public class DatabaseManager implements IDatabaseManager {
 	}
 
 	public Connection getConnection() throws SQLException {
-		return DriverManager.getConnection(IDatabaseManager.url, IDatabaseManager.username, IDatabaseManager.password);
+		return DriverManager.getConnection(en.getProperty(url), en.getProperty(username), en.getProperty(password));
 	}
 
 }
