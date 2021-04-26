@@ -4,9 +4,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Set;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -14,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import com.divergentsl.cms.dao.DrugDao;
 import com.divergentsl.cms.databaseconnection.DatabaseManager;
+import com.divergentsl.cms.dto.DoctorDto;
 import com.divergentsl.cms.dto.DrugDto;
 
 /**
@@ -23,7 +30,7 @@ import com.divergentsl.cms.dto.DrugDto;
  */
 @Component
 public class CRUDDrug {
-	public static final Logger myLogger=Logger.getLogger("com.mycompany.myapp");
+	private static Logger myLogger = LoggerFactory.getLogger(CRUDDrug.class);
 	
 	@Autowired
 	private DrugDao drugdao;
@@ -59,7 +66,7 @@ public class CRUDDrug {
 			case 5:
 				break exit;
 				default:
-					myLogger.log(Level.INFO,"Invalid Input");
+					myLogger.debug("Invalid Input");
 					break;
 			}
 
@@ -71,34 +78,60 @@ public class CRUDDrug {
 	 */
 	public void addDrug() {
 		
+		DrugDto drugDto = new DrugDto();
+		
 		System.out.println("----Add Drug-----");
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Enter drug id=");
 		String drugid = sc.nextLine();
+		drugDto.setDrugid(drugid);
 
 		System.out.println("Enter drug name=");
 		String drugname = sc.nextLine();
+		drugDto.setDrugname(drugname);
 
 		System.out.println("Enter drug description=");
 		String drugdescription = sc.nextLine();
+		drugDto.setDrugdescription(drugdescription);
 
 		System.out.println("Enter quantity=");
 		String drugquantity = sc.nextLine();
+		drugDto.setDrugquantity(drugquantity);
 
 		System.out.println("Enter drugprice=");
 		String drugprice = sc.nextLine();
+		drugDto.setDrugprice(drugprice);
 
 		//DrugDao drugdao = new DrugDao(new DatabaseManager());
-
+		
+		if(validateDrugDto(drugDto)) {
+			return;
+		}
 		try {
 			drugdao.addDrug(drugid, drugname, drugdescription, drugquantity, drugprice);
 			
 			System.out.println("Added Successfully");
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 
 	}
+	
+	  public boolean validateDrugDto(DrugDto drugDto) {
+			
+			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+			Validator validator =factory.getValidator();
+			
+			Set<ConstraintViolation<DrugDto>> violations = validator.validate(drugDto);
+			
+			for(ConstraintViolation<DrugDto> violation :violations) {
+				myLogger.error(violation.getMessage());
+			}
+			
+			return violations.size() > 0;
+			
+			
+		}
 
 	/**
 	 * method to delete the drug
@@ -117,7 +150,7 @@ public class CRUDDrug {
 			
 			System.out.println("Deleted Successfully");
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 	}
 
@@ -146,7 +179,7 @@ public class CRUDDrug {
 			System.out.println("Updated Successfully");
 		} catch (SQLException e) {
 			// TODO: handle exception
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 
 	}
@@ -168,7 +201,7 @@ public class CRUDDrug {
 			}
 
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 	}
 

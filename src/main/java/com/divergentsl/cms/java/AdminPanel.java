@@ -2,9 +2,8 @@ package com.divergentsl.cms.java;
 
 import java.util.Scanner;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AdminPanel {
-	public static final Logger myLogger = Logger.getLogger("com.mycompany.myapp");
+	private static Logger myLogger = LoggerFactory.getLogger(AdminPanel.class);
 	
 	@Autowired
 	CRUDPatient crudPatient;
@@ -73,7 +72,7 @@ public class AdminPanel {
 				case 6:
 					break exit;
 					default:
-						myLogger.log(Level.INFO,"Invalid Input");
+						myLogger.debug("Invalid Input");
 						break;
 				}
 				

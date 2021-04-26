@@ -1,8 +1,33 @@
 package com.divergentsl.cms.dto;
 
-public class PatientDto {
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 
-	String pid, pname, paddress, pcontactnumber, page, pweight;
+import org.springframework.stereotype.Component;
+
+@Component
+public class PatientDto {
+	
+	@NotBlank(message = "id should not be null")
+	private String pid; 
+	
+	@NotBlank(message="name can not be blank")
+	private String pname;
+	
+	@NotBlank(message="address can not be blank")
+	private String paddress;
+	
+	@Size(min=10,max=10,message="Number must contain 10 digits only")
+	private String pcontactnumber;
+	
+	@NotBlank(message = "age should not be null")
+	private String page;
+	
+	@NotBlank(message = "weight should not be null")
+	private String pweight;
 
 	public String getPid() {
 		return pid;

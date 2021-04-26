@@ -4,9 +4,15 @@ package com.divergentsl.cms.java;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Set;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -15,6 +21,7 @@ import org.springframework.stereotype.Component;
 import com.divergentsl.cms.dao.AppointmentDao;
 import com.divergentsl.cms.databaseconnection.DatabaseManager;
 import com.divergentsl.cms.dto.AppointmentDto;
+import com.divergentsl.cms.dto.LabtestDto;
 
 /**
  * Class for CRUD Appointment
@@ -23,7 +30,7 @@ import com.divergentsl.cms.dto.AppointmentDto;
  */
 @Component
 public class CRUDAppointment {
-	public static final Logger myLogger=Logger.getLogger("com.mycompany.myapp");
+	private static Logger myLogger = LoggerFactory.getLogger(CRUDAppointment.class); 
 	
 	@Autowired
 	private AppointmentDao appointmentdao;
@@ -62,7 +69,7 @@ public class CRUDAppointment {
 			case 5:
 				break exit;
 			default:
-				myLogger.log(Level.INFO, "Invalid Input!");
+				myLogger.debug( "Invalid Input!");
 				break;
 			}
 
@@ -74,32 +81,55 @@ public class CRUDAppointment {
 	 */
 	public void addAppointment() {
 		
+		AppointmentDto appointmentDto= new AppointmentDto();
+		
 		System.out.println("----Add Appointment-----");
 		Scanner sc = new Scanner(System.in);
 
 		System.out.println("Enter Appointment id=");
 		String appid = sc.nextLine();
+		appointmentDto.setAppid(appid);
 
 		System.out.println("Enter patient id=");
 		String pid = sc.nextLine();
+		appointmentDto.setPid(pid);
 
 		System.out.println("Enter patient name=");
 		String pname = sc.nextLine();
+		appointmentDto.setPname(pname);
 
 		System.out.println("Enter Appointment date=");
 		String appdate = sc.nextLine();
+		appointmentDto.setAppdate(appdate);
 
 		//AppointmentDao appointmentdao = new AppointmentDao(new DatabaseManager());
-
+		if(validateAppointmentDto(appointmentDto)) {
+			return;
+		}
 		try {
 			appointmentdao.addAppointment(appid, pid, pname, appdate);
 			
 			System.out.println("Added Successfully");
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 
 	}
+	 public boolean validateAppointmentDto(AppointmentDto appointmentDto) {
+			
+			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+			Validator validator =factory.getValidator();
+			
+			Set<ConstraintViolation<AppointmentDto>> violations = validator.validate(appointmentDto);
+			
+			for(ConstraintViolation<AppointmentDto> violation :violations) {
+				myLogger.error(violation.getMessage());
+			}
+			
+			return violations.size() > 0;
+			
+			
+		}
 
 	/**
 	 * method for deleting the the appointment
@@ -118,7 +148,7 @@ public class CRUDAppointment {
 			appointmentdao.deleteAppointment(appid);
 			System.out.println("Deleted Successfully");
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO, e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 	}
 
@@ -146,7 +176,7 @@ public class CRUDAppointment {
 			
 			System.out.println("Updated Successfully");
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 			
 		}
 
@@ -169,7 +199,7 @@ public class CRUDAppointment {
 			}
 
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 	}
 

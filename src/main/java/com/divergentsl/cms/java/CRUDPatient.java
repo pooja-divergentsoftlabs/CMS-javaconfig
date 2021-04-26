@@ -3,16 +3,22 @@ package com.divergentsl.cms.java;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Set;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.divergentsl.cms.dao.PatientDao;
 import com.divergentsl.cms.databaseconnection.DatabaseManager;
+import com.divergentsl.cms.dto.DoctorDto;
 import com.divergentsl.cms.dto.PatientDto;
 
 /**
@@ -22,7 +28,9 @@ import com.divergentsl.cms.dto.PatientDto;
  */
 @Component
 public class CRUDPatient {
-	public static final Logger myLogger= Logger.getLogger("com.mycompany.myapp");
+	
+	private static Logger myLogger = LoggerFactory.getLogger(CRUDPatient.class);
+	
 	
 	@Autowired
 	private PatientDao patientDao;
@@ -59,7 +67,8 @@ public class CRUDPatient {
 			case 5:
 				break exit;
 			default:
-				myLogger.log(Level.INFO,"Invalid Input");
+				myLogger.debug("Invalid Input");
+				
 				break;
 				
 
@@ -73,36 +82,63 @@ public class CRUDPatient {
 	 */
 	public void addPatient() {
 		
+		PatientDto patientDto = new PatientDto();
+		
 		System.out.println("----Add Patient-----");
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Enter id=");
 		String pid = sc.nextLine();
+		patientDto.setPid(pid);
 
 		System.out.println("Enter name=");
 		String pname = sc.nextLine();
+		patientDto.setPname(pname);
 
 		System.out.println("Enter address=");
 		String paddress = sc.nextLine();
+		patientDto.setPaddress(paddress);
 
 		System.out.println("Enter contact number=");
 		String pcontactnumber = sc.nextLine();
+		patientDto.setPcontactnumber(pcontactnumber);
 
 		System.out.println("Enter age=");
 		String page = sc.nextLine();
+		patientDto.setPage(page);
 
 		System.out.println("Enter weight=");
 		String pweight = sc.nextLine();
+		patientDto.setPweight(pweight);
 
 		//PatientDao patientdao = new PatientDao(new DatabaseManager());
-
+		
+		if(validatePatientDto(patientDto)) {
+			return;
+		}
 		try {
 			patientDao.addPatient(pid, pname, paddress, pcontactnumber, page, pweight);
 			System.out.println("Added Successfully");
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 
 	}
+	
+	  public boolean validatePatientDto(PatientDto patientDto) {
+			
+			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+			Validator validator =factory.getValidator();
+			
+			Set<ConstraintViolation<PatientDto>> violations = validator.validate(patientDto);
+			
+			for(ConstraintViolation<PatientDto> violation :violations) {
+				myLogger.error(violation.getMessage());
+			}
+			
+			return violations.size() > 0;
+			
+			
+		}
 
 	/**
 	 * method to delete the patient
@@ -121,7 +157,7 @@ public class CRUDPatient {
 			System.out.println("Deleted Successfully");
 			
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 	}
 
@@ -152,7 +188,7 @@ public class CRUDPatient {
 			
 			System.out.println("Updated Successfully");
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 
 	}
@@ -175,7 +211,7 @@ public class CRUDPatient {
 			}
 
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 	}
 

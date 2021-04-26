@@ -3,12 +3,17 @@ package com.divergentsl.cms.java;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Set;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.divergentsl.cms.dao.DoctorDao;
@@ -23,7 +28,7 @@ import com.divergentsl.cms.dto.DoctorDto;
  */
 @Component
 public class CRUDDoctor {
-	public static final Logger myLogger = Logger.getLogger("com.mycompany.myapp");
+	private static Logger myLogger = LoggerFactory.getLogger(CRUDDoctor.class);
 
 	@Autowired
 	private DoctorDao doctorDao;
@@ -64,7 +69,7 @@ public class CRUDDoctor {
 				break exit;
 				
 				default:
-					myLogger.log(Level.INFO,"Invalid Input");
+					myLogger.debug("Invalid Input");
 					break;
 			}
 
@@ -76,36 +81,63 @@ public class CRUDDoctor {
 	 */
 	public void addDoctor() {
 		
+		DoctorDto doctorDto= new DoctorDto();
+		
 		
 		System.out.println("----Add Doctor----");
 		Scanner sc = new Scanner(System.in);
 
 		System.out.println("Enter id=");
 		String did = sc.nextLine();
+		doctorDto.setDid(did);
 
 		System.out.println("Enter name=");
 		String dname = sc.nextLine();
+		doctorDto.setDname(dname);
 
 		System.out.println("Enter speciality=");
 		String dspeciality = sc.nextLine();
+		doctorDto.setDspeciality(dspeciality);
 
 		System.out.println("Enter contact number=");
-		String pcontactnumber = sc.nextLine();
+		String dcontactnumber = sc.nextLine();
+		doctorDto.setDcontactnumber(dcontactnumber);
 
 		System.out.println("Enter fees=");
 		String dfees = sc.nextLine();
+		doctorDto.setDfees(dfees);
 
 //		DoctorDao doctordao = new DoctorDao(new DatabaseManager());
-
+		
+		if(validateDoctorDto(doctorDto)) {
+			return;
+		}
 		try {
-			doctorDao.addDoctor(did, dname, dspeciality, pcontactnumber, dfees);
+			doctorDao.addDoctor(did, dname, dspeciality, dcontactnumber, dfees);
 			
 			System.out.println("Added Successfully");
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 
 	}
+	
+	  public boolean validateDoctorDto(DoctorDto doctorDto) {
+			
+			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+			Validator validator =factory.getValidator();
+			
+			Set<ConstraintViolation<DoctorDto>> violations = validator.validate(doctorDto);
+			
+			for(ConstraintViolation<DoctorDto> violation :violations) {
+				myLogger.error(violation.getMessage());
+			}
+			
+			return violations.size() > 0;
+			
+			
+		}
+		
 
 	/**
 	 * method for deleting the doctor
@@ -123,10 +155,13 @@ public class CRUDDoctor {
 			
 			System.out.println("Deleted Successfully");
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 
 	}
+	
+	  
+	
 
 	/**
 	 * method for updating the doctor
@@ -152,7 +187,7 @@ public class CRUDDoctor {
 			
 			System.out.println("Updated Successfully");
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 
 	}
@@ -175,7 +210,7 @@ public class CRUDDoctor {
 			}
 
 		} catch (SQLException e) {
-			myLogger.log(Level.INFO,e.getMessage());
+			myLogger.debug(e.getMessage());
 		}
 	}
 }

@@ -6,9 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class LoginPage {
-	public static final Logger myLogger = Logger.getLogger("com.mycompany.myapp");
+	private static Logger myLogger = LoggerFactory.getLogger(LoginPage.class);
 	
 	
 	@Autowired
@@ -50,7 +50,7 @@ public class LoginPage {
 				adminPanel.adminPanel();
 				}
 				else {
-					myLogger.log(Level.INFO,"Wrong id/password");
+					myLogger.debug("Wrong id/password");
 					//System.out.println("Wrong id/password");
 				}
 				break;
@@ -59,18 +59,18 @@ public class LoginPage {
 				if(doctorLogin()) {
 					doctorLogin.doctorPanel();
 				}else {
-					myLogger.log(Level.INFO,"Wrong id/password");
+					myLogger.debug("Wrong id/password");
 					//System.out.println("Wrong id/password");
 				}
 				break;
 
 			case 3:
-				myLogger.log(Level.INFO,"-----Exit-----");
+				myLogger.debug("-----Exit-----");
 				//System.out.println("----EXIT----");
 				break exit;
 				
 				default:
-					myLogger.log(Level.INFO,"Invalid Input");
+					myLogger.debug("Invalid Input");
 					break;
 
 			}
@@ -98,13 +98,13 @@ public class LoginPage {
 	                return true;
 	            }
 	            else{
-	            	myLogger.log(Level.INFO,"Wrong username/password");
+	            	myLogger.debug("Wrong username/password");
 	                
 	                return false;
 	            }
 
 	        } catch (ClassNotFoundException | SQLException e) {
-	        	myLogger.log(Level.INFO,e.getMessage());
+	        	myLogger.debug(e.getMessage());
 	        }
 
 
@@ -132,12 +132,12 @@ public class LoginPage {
 	                return true;
 	            }
 	            else{
-	            	myLogger.log(Level.INFO,"Wrong username/password");
+	            	myLogger.debug("Wrong username/password");
 	               // System.out.println("Wrong username/password");
 	                return false;
 	            }
 	        } catch (ClassNotFoundException e) {
-	        	myLogger.log(Level.INFO,e.getMessage());
+	        	myLogger.debug(e.getMessage());
 	        } catch (SQLException throwables) {
 	            throwables.printStackTrace();
 	        }
