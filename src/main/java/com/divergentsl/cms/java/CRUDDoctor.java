@@ -2,6 +2,8 @@ package com.divergentsl.cms.java;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -195,22 +197,32 @@ public class CRUDDoctor {
 	/**
 	 * method for showing the list of doctor
 	 */
-	public void listDoctor() {
-		System.out.println("----List of Doctor----");
+	
 		
+		public void listDoctor() {
+			System.out.println(
+			"--------------------------------------Doctor List---------------------------------------------");
 
-		try {
-//			DoctorDao doctordao = new DoctorDao(new DatabaseManager());
-			List<DoctorDto> dtos = doctorDao.listDoctor();
+			try {
 
-			for (DoctorDto doctorDto : dtos) {
-				System.out.printf(" %10s %30s %15s  %20s %20s", doctorDto.getDid(), doctorDto.getDname(),
-						doctorDto.getDspeciality(), doctorDto.getDcontactnumber(), doctorDto.getDfees());
-				System.out.println("\n");
+			List<Map<String, Object>> list = doctorDao.listDoctor();
+			if (list != null) {
+
+			// logger.info("id\t name \t speciality\t fee\n");
+
+			for (Map<String, Object> map : list) {
+			for (Entry<String, Object> get : map.entrySet()) {
+
+			System.out.printf("%20s", get.getValue());
+
+			}
+			myLogger.info("\n");
+			}
+			}
+			} catch (SQLException e) {
+			myLogger.debug("----------Can't read---------" + e.getMessage());
 			}
 
-		} catch (SQLException e) {
-			myLogger.debug(e.getMessage());
-		}
-	}
+			}
+		
 }

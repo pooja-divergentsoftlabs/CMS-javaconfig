@@ -2,8 +2,10 @@ package com.divergentsl.cms.java;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -197,22 +199,29 @@ public class CRUDPatient {
 	 * method to list of patient
 	 */
 	public void listPatient() {
-		
-		System.out.println("----List of Patient----");
-		try {
-			//PatientDao patientdao = new PatientDao(new DatabaseManager());
-			List<PatientDto> dtos = patientDao.listPatient();
+		System.out.println(
+				"--------------------------------------Patient List---------------------------------------------");
 
-			for (PatientDto patientDto : dtos) {
-				System.out.printf(" %10s %30s %15s  %20s %20s %20s ", patientDto.getPid(), patientDto.getPname(),
-						patientDto.getPaddress(), patientDto.getPcontactnumber(), patientDto.getPage(),
-						patientDto.getPweight());
-				System.out.println("\n");
-			}
+				try {
 
-		} catch (SQLException e) {
-			myLogger.debug(e.getMessage());
-		}
-	}
+				List<Map<String, Object>> list = patientDao.listPatient();
+				if (list != null) {
+
+				// logger.info("id\t name \t speciality\t fee\n");
+
+				for (Map<String, Object> map : list) {
+				for (Entry<String, Object> get : map.entrySet()) {
+
+				System.out.printf("%20s", get.getValue());
+
+				}
+				myLogger.info("\n");
+				}
+				}
+				} catch (SQLException e) {
+				myLogger.debug("----------Can't read---------" + e.getMessage());
+				}
+
+				}
 
 }

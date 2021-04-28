@@ -3,8 +3,10 @@ package com.divergentsl.cms.java;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -188,21 +190,30 @@ public class CRUDDrug {
 	 * method to show the list of drug
 	 */
 	public void listDrug() {
-		
-		System.out.println("----List of Drug----");
+		System.out.println(
+		"--------------------------------------Drug List---------------------------------------------");
+
 		try {
-			//DrugDao drugDao = new DrugDao(new DatabaseManager());
-			List<DrugDto> dtos = drugdao.listDrug();
 
-			for (DrugDto drugDto : dtos) {
-				System.out.printf(" %10s %30s %15s  %20s %20s ", drugDto.getDrugid(), drugDto.getDrugname(),
-						drugDto.getDrugdescription(), drugDto.getDrugquantity(), drugDto.getDrugprice());
-				System.out.println("\n");
-			}
+		List<Map<String, Object>> list = drugdao.listDrug();
+		if (list != null) {
 
-		} catch (SQLException e) {
-			myLogger.debug(e.getMessage());
+		// logger.info("id\t name \t speciality\t fee\n");
+
+		for (Map<String, Object> map : list) {
+		for (Entry<String, Object> get : map.entrySet()) {
+
+		System.out.printf("%20s", get.getValue());
+
 		}
-	}
+		myLogger.info("\n");
+		}
+		}
+		} catch (SQLException e) {
+		myLogger.debug("----------Can't read---------" + e.getMessage());
+		}
+
+		}
+	
 
 }

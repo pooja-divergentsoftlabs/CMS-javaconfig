@@ -2,8 +2,10 @@ package com.divergentsl.cms.java;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -184,22 +186,29 @@ public class CRUDLabtest {
 	 * method to list the labtest
 	 */
 	public void listLabtest() {
-		
-		System.out.println("----List of Labtest----");
+		System.out.println(
+		"--------------------------------------Labtest List---------------------------------------------");
+
 		try {
-			//LabtestDao labtestdao = new LabtestDao(new DatabaseManager());
-			List<LabtestDto> dtos = labtestdao.listLabtest();
-			// System.out.printf("id name\t pid\t fees\n ");
 
-			for (LabtestDto labtestDto : dtos) {
-				System.out.printf(" %10s %30s %15s  %20s ", labtestDto.getTestid(), labtestDto.getTestname(),
-						labtestDto.getPid(), labtestDto.getTestfee());
-				System.out.println("\n");
-			}
+		List<Map<String, Object>> list = labtestdao.listLabtest();
+		if (list != null) {
 
-		} catch (SQLException e) {
-			myLogger.debug(e.getMessage());
+		// logger.info("id\t name \t speciality\t fee\n");
+
+		for (Map<String, Object> map : list) {
+		for (Entry<String, Object> get : map.entrySet()) {
+
+		System.out.printf("%20s", get.getValue());
+
 		}
-	}
+		myLogger.info("\n");
+		}
+		}
+		} catch (SQLException e) {
+		myLogger.debug("----------Can't read---------" + e.getMessage());
+		}
+
+		}
 
 }

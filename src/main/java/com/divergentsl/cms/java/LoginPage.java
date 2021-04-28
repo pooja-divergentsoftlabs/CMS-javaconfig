@@ -5,12 +5,17 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+
+
 
 /**
  * Class for Login Page
@@ -27,6 +32,8 @@ public class LoginPage {
 	AdminPanel adminPanel;
 	@Autowired
 	DoctorLogin doctorLogin;
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	public void loginPage() {
 
@@ -78,7 +85,7 @@ public class LoginPage {
 	}
 	
 	
-	 public static boolean adminLogin(){
+	 public boolean adminLogin(){
 	        Scanner sc = new Scanner(System.in);
 
 	        System.out.println("Enter username=");
@@ -86,24 +93,28 @@ public class LoginPage {
 
 	        System.out.println("Enter password=");
 	        String password = sc.nextLine();
+	        
+	        
 
 	        try{
-	            Class.forName("com.mysql.cj.jdbc.Driver");
+	           /* Class.forName("com.mysql.cj.jdbc.Driver");
 	            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/clinic_management_system","root","root");
 	            Statement st = con.createStatement();
 	            ResultSet rs = st.executeQuery("SELECT * FROM adminn where a_username = '"+username+"' && a_password = '"+password+"'");
 	            if(rs.next()){
-	           
-	               System.out.println("Login Successful");
-	                return true;
-	            }
-	            else{
-	            	myLogger.debug("Wrong username/password");
-	                
+	           */
+	        	List<Map<String,Object>> list = jdbcTemplate.queryForList("SELECT * FROM adminn where a_username = '"+username+"' && a_password = '"+password+"'");
+	            if(list.isEmpty()) {  
+	        	myLogger.info("TRY AGAIN!!!");
 	                return false;
 	            }
+	            else{
+	            	myLogger.info("-----Admin Login Successfull------");
+	                
+	                return true;
+	            }
 
-	        } catch (ClassNotFoundException | SQLException e) {
+	        } catch (Exception e) {
 	        	myLogger.debug(e.getMessage());
 	        }
 
@@ -112,7 +123,7 @@ public class LoginPage {
 	    }
 	 
 	 
-	 public static boolean doctorLogin(){
+	 public boolean doctorLogin(){
 	        Scanner sc = new Scanner(System.in);
 
 	        System.out.println("Enter username=");
@@ -122,31 +133,32 @@ public class LoginPage {
 	        String password = sc.nextLine();
 
 	        try {
-	            Class.forName("com.mysql.cj.jdbc.Driver");
+	            /*Class.forName("com.mysql.cj.jdbc.Driver");
 	            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/clinic_management_system","root","root");
 	            Statement st = con.createStatement();
 	            ResultSet rs = st.executeQuery("SELECT * FROM doctorlogin where d_username='"+username+"'&& d_password='"+password+"' ");
 	            if(rs.next()){
-	            	
-	                System.out.println("Login successful");
-	                return true;
-	            }
-	            else{
-	            	myLogger.debug("Wrong username/password");
-	               // System.out.println("Wrong username/password");
+	            	*/
+	        	List<Map<String,Object>> list = jdbcTemplate.queryForList("SELECT * FROM doctorlogin where d_username='"+username+"'&& d_password='"+password+"' ");
+	            if(list.isEmpty()) {  
+	        	myLogger.info("TRY AGAIN!!!");
 	                return false;
 	            }
-	        } catch (ClassNotFoundException e) {
+	            else{
+	            	myLogger.info("-----Doctor Login Successfull------");
+	                
+	                return true;
+	            }
+	   
+	            }
+	         catch (Exception e) {
 	        	myLogger.debug(e.getMessage());
-	        } catch (SQLException throwables) {
-	            throwables.printStackTrace();
-	        }
 	        return false;
 	    }
 
 	 
 	 
-	 
+	 } 
 	 
 }
 	

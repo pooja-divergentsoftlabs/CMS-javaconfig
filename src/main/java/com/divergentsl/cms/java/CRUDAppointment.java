@@ -3,8 +3,10 @@ package com.divergentsl.cms.java;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -187,20 +189,30 @@ public class CRUDAppointment {
 	 */
 	public void listAppointment() {
 	
-		System.out.println("----List of Appointment----");
-		try {
-			//AppointmentDao appointmentdao = new AppointmentDao(new DatabaseManager());
-			List<AppointmentDto> dtos = appointmentdao.listAppointment();
+			System.out.println(
+			"--------------------------------------Appointment List---------------------------------------------");
 
-			for (AppointmentDto appointmentDto : dtos) {
-				System.out.printf(" %s %30s %30s  %20s ", appointmentDto.getAppid(), appointmentDto.getPid(),
-						appointmentDto.getPname(), appointmentDto.getAppdate());
-				System.out.println("\n");
+			try {
+
+			List<Map<String, Object>> list = appointmentdao.listAppointment();
+			if (list != null) {
+
+			// logger.info("id\t name \t speciality\t fee\n");
+
+			for (Map<String, Object> map : list) {
+			for (Entry<String, Object> get : map.entrySet()) {
+
+			System.out.printf("%20s", get.getValue());
+
+			}
+			myLogger.info("\n");
+			}
+			}
+			} catch (SQLException e) {
+			myLogger.debug("----------Can't read---------" + e.getMessage());
 			}
 
-		} catch (SQLException e) {
-			myLogger.debug(e.getMessage());
-		}
-	}
+			}
+		
 
 }

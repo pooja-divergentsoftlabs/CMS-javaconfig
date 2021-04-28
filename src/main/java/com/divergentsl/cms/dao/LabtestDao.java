@@ -6,8 +6,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.divergentsl.cms.databaseconnection.IDatabaseManager;
@@ -23,9 +27,13 @@ import com.divergentsl.cms.dto.LabtestDto;
 @Repository
 public class LabtestDao {
 	
+	/*
+	 * @Autowired IDatabaseManager databaseManager;
+	 */
 	@Autowired
-	IDatabaseManager databaseManager;
+	private JdbcTemplate jdbcTemplate;
 	
+	private static Logger myLogger = LoggerFactory.getLogger(LabtestDao.class);
 	
 	/**
 	 * This method insert the labtest
@@ -38,15 +46,12 @@ public class LabtestDao {
 	 */
 	public int addLabtest(String testid,String testname,String pid, String testfee) throws SQLException {
 		
-		Connection con = null;
-		Statement st= null;
+	
+		  return this.jdbcTemplate.update("insert into labtest values ('"+testid+"','"+testname+"','"+pid+"','"+testfee+"')");
+		  
 		
-		con=databaseManager.getConnection();
-		st=con.createStatement();
-		return st.executeUpdate("insert into labtest values ('"+testid+"','"+testname+"','"+pid+"','"+testfee+"')");
+		  }
 		
-		
-	}
 
 	/**
 	 * This method delete the labtest
@@ -56,14 +61,12 @@ public class LabtestDao {
 	 */
 	public int deleteLabtest(String testid) throws SQLException{
 
-		Connection con = null;
-		Statement st= null;
+	
 		
-		con=databaseManager.getConnection();
-		st=con.createStatement();
-		
-		return st.executeUpdate("delete from labtest where testid='"+testid+"' ");
-		
+		 return this.jdbcTemplate.update("delete from labtest where testid='"+testid+"' ");
+				  
+				
+				  
 	}
 	
 	/**
@@ -77,14 +80,10 @@ public class LabtestDao {
 	 */
 	public int updateLabtest(String testid,String testname, String pid,String testfee) throws SQLException {
 		
-		Connection con = null;
-		Statement st= null;
-		
-		con=databaseManager.getConnection();
-		st=con.createStatement();
-		return st.executeUpdate("update labtest set testname='"+testname+"',pid='"+pid+"',testfee='"+testfee+"' where testid='"+testid+"'");
-		
-		
+	
+	return this.jdbcTemplate.update("update labtest set testname='"+testname+"',pid='"+pid+"',testfee='"+testfee+"' where testid='"+testid+"'");
+			  
+			
 	}
 	
 	/**
@@ -92,26 +91,12 @@ public class LabtestDao {
 	 * @return It returns the list of labtest
 	 * @throws SQLException
 	 */
-	public List<LabtestDto> listLabtest() throws SQLException {
-		Connection con = null;
-		Statement st = null;
+	public List<Map<String, Object>> listLabtest() throws SQLException {
+		List<Map<String, Object>> list = new ArrayList<>();
+		list = jdbcTemplate.queryForList("select * from labtest");
+		return list;
 
-		con = databaseManager.getConnection();
-		st = con.createStatement();
-		ResultSet rs = st.executeQuery("select * from labtest ");
-		List<LabtestDto> labtestDtos = new ArrayList<LabtestDto>();
-		while (rs.next()) {
-			LabtestDto labtestDto = new LabtestDto();
-			labtestDto.setTestid(rs.getString(1));
-			labtestDto.setTestname(rs.getString(2));
-			labtestDto.setPid(rs.getString(3));
-			labtestDto.setTestfee(rs.getString(4));
-			labtestDtos.add(labtestDto);
-
-		}
-		return labtestDtos;
-
-	}
+}
 	
 	
 	
